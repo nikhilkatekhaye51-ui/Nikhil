@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Submit Feedback{% endblock %}
+{% block content %}
+<h1>Submit feedback</h1>
+<p class="muted">Tell us about a course. Do not include passwords or private details.</p>
+
+<form id="feedback-form" class="card form" method="post" action="{{ url_for('submit') }}" novalidate>
+  {% if errors %}
+    <div class="alert alert-error" role="alert">
+      Please fix the problems below.
+      {% if errors.form %}<br>{{ errors.form }}{% endif %}
+    </div>
+  {% endif %}
+
+  <div class="field">
+    <label for="student_name">Student name</label>
+    <input id="student_name" name="student_name" type="text" maxlength="60" required
+           value="{{ values.student_name or '' }}">
+    {% if errors.student_name %}<p class="error">{{ errors.student_name }}</p>{% endif %}
+  </div>
+
+  <div class="field">
+    <label for="course-select">Course</label>
+    <select id="course-select" name="course" required>
+      <option value="">Choose a course</option>
+      {% for c in courses %}
+        <option value="{{ c }}" {% if c == values.course %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.course %}<p class="error">{{ errors.course }}</p>{% endif %}
+  </div>
+
+  <div class="field">
+    <label for="rating">Rating</label>
+    <select id="rating" name="rating" required>
+      <option value="">Choose a rating</option>
+      {% for n in [5, 4, 3, 2, 1] %}
+        <option value="{{ n }}" {% if values.rating == n %}selected{% endif %}>{{ n }} - {{ n|stars }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.rating %}<p class="error">{{ errors.rating }}</p>{% endif %}
+  </div>
+
+  <div class="field">
+    <label for="message">Feedback message</label>
+    <textarea id="message" name="message" rows="5" maxlength="1000" required>{{ values.message or '' }}</textarea>
+    <p class="muted small"><span id="char-count">0</span> / 1000 characters</p>
+    {% if errors.message %}<p class="error">{{ errors.message }}</p>{% endif %}
+  </div>
+
+  <button class="btn" type="submit" id="submit-btn">Submit feedback</button>
+</form>
+{% endblock %}

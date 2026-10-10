@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import feedback_card %}
+{% block title %}All Feedback{% endblock %}
+{% block content %}
+<h1>All feedback</h1>
+
+<form class="filter-form" method="get" action="{{ url_for('feedback_list') }}">
+  <label for="course">Filter by course</label>
+  <select id="course" name="course">
+    <option value="">All courses</option>
+    {% for c in courses %}
+      <option value="{{ c }}" {% if c == selected %}selected{% endif %}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn" type="submit">Filter</button>
+  {% if selected %}<a href="{{ url_for('feedback_list') }}">Clear</a>{% endif %}
+</form>
+
+<p class="muted">Showing {{ items|length }} item{{ '' if items|length == 1 else 's' }}, newest first.</p>
+
+{% if items %}
+  <div class="feedback-grid">
+    {% for item in items %}{{ feedback_card(item) }}{% endfor %}
+  </div>
+{% else %}
+  <section class="card empty">
+    <h2>No feedback found</h2>
+    <p>{% if selected %}Nobody has reviewed this course yet.{% else %}Nothing has been submitted yet.{% endif %}</p>
+    <a class="btn" href="{{ url_for('submit') }}">Submit feedback</a>
+  </section>
+{% endif %}
+{% endblock %}

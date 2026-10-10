@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stars, feedback_card %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="muted">Live numbers calculated from submitted student feedback.</p>
+
+<section class="stats-grid" aria-label="Summary statistics">
+  <div class="card stat">
+    <span class="stat-label">Total feedback</span>
+    <span class="stat-value">{{ stats.total_feedback }}</span>
+  </div>
+  <div class="card stat stat-main">
+    <span class="stat-label">Overall average rating</span>
+    {% if stats.total_feedback %}
+      <span class="stat-value">{{ "%.2f"|format(stats.average_rating) }}<small> / 5</small></span>
+      {{ stars(stats.average_rating) }}
+    {% else %}
+      <span class="stat-value">&ndash;</span>
+    {% endif %}
+  </div>
+  <div class="card stat">
+    <span class="stat-label">Courses with feedback</span>
+    <span class="stat-value">{{ stats.courses_with_feedback }}</span>
+  </div>
+</section>
+
+{% if stats.total_feedback %}
+<div class="two-col">
+  <section class="card">
+    <h2>Rating breakdown</h2>
+    {% for star in [5, 4, 3, 2, 1] %}
+      {% set count = stats.rating_distribution[star] %}
+      <div class="bar-row">
+        <span>{{ star }} &#9733;</span>
+        <div class="bar"><div class="bar-fill" style="width: {{ (count * 100 / stats.total_feedback)|round|int }}%"></div></div>
+        <span>{{ count }}</span>
+      </div>
+    {% endfor %}
+  </section>
+  <section class="card">
+    <h2>Course ratings</h2>
+    <table>
+      <thead><tr><th>Course</th><th>Reviews</th><th>Avg</th></tr></thead>
+      <tbody>
+      {% for row in stats.courses %}
+        <tr><td>{{ row.course }}</td><td>{{ row.count }}</td><td>{{ "%.2f"|format(row.average_rating) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<h2>Most recent feedback</h2>
+<div class="feedback-grid">
+  {% for item in latest %}{{ feedback_card(item) }}{% endfor %}
+</div>
+<p><a href="{{ url_for('feedback_list') }}">See all feedback &rarr;</a></p>
+{% else %}
+<section class="card empty">
+  <h2>No feedback yet</h2>
+  <p>Be the first to rate a course and help your classmates.</p>
+  <a class="btn" href="{{ url_for('submit') }}">Submit feedback</a>
+</section>
+{% endif %}
+{% endblock %}

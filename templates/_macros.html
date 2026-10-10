@@ -1,0 +1,16 @@
+{# Small reusable pieces shared by several pages. #}
+{% macro stars(rating) %}
+  <span class="stars" role="img" aria-label="{{ rating }} out of 5 stars">{{ rating|stars }}</span>
+{% endmacro %}
+
+{% macro feedback_card(item) %}
+  <article class="card feedback-card">
+    <div class="feedback-head">
+      <strong>{{ item.student_name }}</strong>
+      {{ stars(item.rating) }}
+    </div>
+    <p class="course-tag">{{ item.course }}</p>
+    <p>{{ item.message }}</p>
+    <p class="muted small">Submitted {{ item.created_at }} UTC</p>
+  </article>
+{% endmacro %}

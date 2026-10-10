@@ -1,0 +1,22 @@
+# Optional Render Blueprint. You can also create the service by hand in the
+# Render dashboard (see README). Deploys are triggered ONLY by the GitHub
+# Actions deploy hook, so automatic deploys on every push are turned off.
+services:
+  - type: web
+    name: campuspulse
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+    # SQLite on the free plan lives on an EPHEMERAL disk: data is lost on
+    # redeploy/restart. For permanent storage use a paid plan with a disk:
+    #   1. Change "plan: free" to a paid plan.
+    #   2. Uncomment the lines below.
+    # disk:
+    #   name: campuspulse-data
+    #   mountPath: /data
+    #   sizeGB: 1

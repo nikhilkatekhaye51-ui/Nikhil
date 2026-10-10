@@ -99,14 +99,14 @@ def test_course_filter_shows_only_that_course(client, valid_form):
     other = dict(valid_form, course=COURSES[1], message="Different course.")
     client.post("/submit", data=other)
 
-    page = client.get("/feedback", params={"course": COURSES[1]}).data
+    page = client.get("/feedback", query_string={"course": COURSES[1]}).data
     assert b"Different course." in page
     assert b"Great labs" not in page
 
 
 def test_unknown_course_filter_shows_error_and_all_items(client, valid_form):
     client.post("/submit", data=valid_form)
-    response = client.get("/feedback", params={"course": "Nope"})
+    response = client.get("/feedback", query_string={"course": "Nope"})
     assert b"Unknown course filter" in response.data
     assert b"Great labs" in response.data
 
